@@ -41,8 +41,12 @@ Upload any video for insurance analysis.
 ### Frame Analysis
 The frame analysis makes it possible to view all detections of any frame selected with a slidebar.
 
+![Alt Text](demo-videos/frame_analysis.gif)
+
 ### Video Analysis
 The video analysis detects all objects in the video and filters out similar ones.
 After that the user is prompted to input all detected objects that should be included in the household insurance.
 Finally the price for the household insurance is calculated based on estimated prices for the chosen objects.
+
+![Alt Text](demo-videos/video_analysis.gif)
 
