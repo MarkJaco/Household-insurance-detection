@@ -1,0 +1,46 @@
+version: 0.2
+env:
+  variables:
+    HTTP_PROXY: "http://proxylb.prod.iaa.si-aws.cloud:80"
+    HTTPS_PROXY: "http://proxylb.prod.iaa.si-aws.cloud:80"
+    NO_PROXY: "localhost,127.0.0.1,169.254.170.2,169.254.169.254,.athena.eu-central-1.amazonaws.com,codebuild.eu-central-1.amazonaws.com,codecommit.eu-central-1.amazonaws.com,ec2.eu-central-1.amazonaws.com,ec2messages.eu-central-1.amazonaws.com,api.ecr.eu-central-1.amazonaws.com,dkr.ecr.eu-central-1.amazonaws.com,elasticfilesystem.eu-central-1.amazonaws.com,elasticloadbalancing.eu-central-1.amazonaws.com,git-codecommit.eu-central-1.amazonaws.com,kms.eu-central-1.amazonaws.com,logs.eu-central-1.amazonaws.com,redshift.eu-central-1.amazonaws.com,s3.eu-central-1.amazonaws.com,api.sagemaker.eu-central-1.amazonaws.com,runtime.sagemaker.eu-central-1.amazonaws.com,sns.eu-central-1.amazonaws.com,sqs.eu-central-1.amazonaws.com,ssm.eu-central-1.amazonaws.com,ssmmessages.eu-central-1.amazonaws.com,sts.eu-central-1.amazonaws.com,secretsmanager.eu-central-1.amazonaws.com,git.system.local,pki.system.local,system.local,.system.local,si-aws.cloud,.si-aws.cloud,172.16.0.0/12,10.0.0.0/8,192.168.0.0/16"
+phases:
+  pre_build:
+    commands:
+      - account=$(aws sts get-caller-identity --query Account --output text)
+      - image_uri="${account}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_NAME}:latest"
+      - echo $image_uri
+      
+      # Restart Docker daemon for using proxy environments
+      - docker_pid=$(pidof dockerd)
+      - kill $docker_pid
+      - while kill -0 $docker_pid ; do sleep 1 ; done
+      - /usr/local/bin/dockerd-entrypoint.sh
+      - docker system info
+      
+      # Retrieves docker credentials so that the subsequent docker push command is
+      # authorized. Authentication is performed automatically by the AWS CLI
+      # using the AWS credentials associated with the IAM role assigned to the
+      # instances in your AWS CodeBuild project.
+      - echo Logging into Amazon ECR...
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $account.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      
+  build:
+    commands:
+      - echo Docker Build started on `date`
+      # Build and tag the built docker image using the appropriate Amazon ECR endpoint and relevant
+      # repository for our service container. This ensures that when the docker push
+      # command is executed later, it will be pushed to the appropriate repository.
+      - docker build -t $IMAGE_NAME .
+      - docker tag $IMAGE_NAME $image_uri
+  
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      # Push the image to ECR.
+      - docker push $image_uri
+      # Create a artifacts file that contains the name and location of the image
+      # pushed to ECR. This will be used by AWS CodePipeline to automate
+      # deployment of this specific container to Amazon ECS if needed.
+      - printf '[{"name":"$IMAGE_NAME","imageUri":"$image_uri"}]' > imagedefinitions.json
+      - cat imagedefinitions.json
