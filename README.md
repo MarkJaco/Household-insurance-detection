@@ -33,6 +33,11 @@ add_selectbox = st.sidebar.selectbox(
     )
 ```
 
+### Upload A Video
+Upload any video for insurance analysis.
+
+![Alt Text](demo-videos/upload_video.gif)
+
 ### Frame Analysis
 The frame analysis makes it possible to view all detections of any frame selected with a slidebar.
 

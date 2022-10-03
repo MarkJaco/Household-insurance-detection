@@ -6,7 +6,11 @@ import yolov6.yoloInterface as yoloInterface
 PRICES = {
     "bottle": 5,
     "laptop": 800,
-    "mobile phone": 400
+    "mobile phone": 400,
+    "oven": 800,
+    "refrigerator": 500,
+    "microwave": 90,
+    "tv": 600
 }
 
 def main():

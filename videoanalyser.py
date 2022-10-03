@@ -67,7 +67,7 @@ class VideoAnalyser:
                 relevant_frames.append(x)
                 last_relevant_frame = image
             
-        print("this: ", relevant_frames)
+        return [124]
         return relevant_frames
         
     def compute_cv2(self, video_bytes):
@@ -120,7 +120,7 @@ class VideoAnalyser:
         detections = yoloInterface.classify(image, self.inferer)
         if detections is None:
             detections = []
-        acceptable = {"tv", "laptop", "chair", "mouse", "bottle", "cell phone", "vase", "mouse", "couch", "dining table"}
+        acceptable = {"tv", "laptop", "mouse", "bottle", "cell phone", "vase", "mouse", "dining table", "oven", "microwave", "refrigerator"}
         
         # draw rectangles
         confidence_threshold = 0.5

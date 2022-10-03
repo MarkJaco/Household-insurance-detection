@@ -74,6 +74,7 @@ class FrameAnalyser:
         for d in detections:
             if d[2] <= confidence_threshold:
                 continue
+            current_class = yoloInterface.CLASSES[int(d[0])]
             # get class from index
             current_class = yoloInterface.CLASSES[int(d[0])]
             # keep track of label, amount and price of detected object
