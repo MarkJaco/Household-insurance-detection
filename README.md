@@ -35,6 +35,7 @@ add_selectbox = st.sidebar.selectbox(
 
 ### Upload A Video
 Upload any video for insurance analysis.
+The Video is then displayed for verification, before being further analysed.
 
 ![Alt Text](demo-videos/upload_video.gif)
 
