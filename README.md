@@ -19,9 +19,9 @@ To avoid memory errors follow the commands below:
     sudo yum install mesa-libGL -y
 
 ## Run Code
-To run the streamlit code within a Cloud9 instance use:
+To run the streamlit code locally:
 
-    streamlit run app.py --server.port=8080 --server.address=0.0.0.0
+    streamlit run app.py
     
 ## In Depth Explaination
 After uploading a video to analyse there are two modes to choose from, selectable by a streamlit sidebar.
